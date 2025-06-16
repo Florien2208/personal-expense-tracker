@@ -1,21 +1,20 @@
 {
   "version": 2,
-  "projects": [
+  "buildCommand": "bun run build",
+  "installCommand": "bun install",
+  "functions": {
+    "apps/server/api/**/*.js": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "routes": [
     {
-      "name": "expense-tracker-web",
-      "source": "apps/web",
-      "framework": "nextjs",
-      "buildCommand": "cd ../.. && bun run build:web",
-      "installCommand": "cd ../.. && bun install",
-      "outputDirectory": ".next"
+      "src": "/api/(.*)",
+      "dest": "apps/server/api/$1"
     },
     {
-      "name": "expense-tracker-server",
-      "source": "apps/server",
-      "framework": "nextjs",
-      "buildCommand": "cd ../.. && bun run build:server",
-      "installCommand": "cd ../.. && bun install",
-      "outputDirectory": ".next"
+      "src": "/(.*)",
+      "dest": "apps/web/$1"
     }
   ]
 }
