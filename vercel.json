@@ -1,34 +1,29 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "apps/web/package.json",
-        "use": "@vercel/next",
-        "config": {
-          "distDir": ".next"
-        }
-      },
-      {
-        "src": "apps/server/package.json",
-        "use": "@vercel/next",
-        "config": {
-          "distDir": ".next"
-        }
+  "version": 2,
+  "builds": [
+    {
+      "src": "apps/web/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "distDir": ".next"
       }
-    ],
-    "routes": [
-      {
-        "src": "/api/(.*)",
-        "dest": "/apps/server/api/$1"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/apps/web/$1"
-      }
-    ],
-    "functions": {
-      "apps/server/api/**": {
-        "runtime": "nodejs20.x"
+    },
+    {
+      "src": "apps/server/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "distDir": ".next"
       }
     }
-  }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/apps/server/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/apps/web/$1"
+    }
+  ]
+}
