@@ -1,0 +1,7 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && bun run build:server",
+  "outputDirectory": ".next",
+  "installCommand": "cd ../.. && bun install",
+  "devCommand": "cd ../.. && bun run dev:server"
+}
