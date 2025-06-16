@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   DollarSign,
@@ -10,12 +11,13 @@ import {
   AlertCircle,
   Lock,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+ const router = useRouter();
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -54,7 +56,7 @@ const ForgotPasswordPage = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <button className="flex items-center text-slate-300 hover:text-white transition-colors">
+            <button type="button" onClick={()=> router.push("/login")} className="flex items-center text-slate-300 hover:text-white transition-colors">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Sign In
             </button>

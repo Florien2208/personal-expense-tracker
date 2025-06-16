@@ -16,10 +16,13 @@ import {
   Plus,
 } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import Loader from "./loader";
 
 const Sidebar = ({ isOpen }) => {
   const router = useRouter();
   const pathname = usePathname();
+    const { data: session, isPending } = authClient.useSession();
 
   const menuItems = [
     {
@@ -66,6 +69,9 @@ const Sidebar = ({ isOpen }) => {
   const isActive = (itemPath) => {
     return pathname === itemPath;
   };
+ if (isPending) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -167,9 +173,9 @@ const Sidebar = ({ isOpen }) => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-white font-medium text-sm truncate">
-                      John Doe
+                      {session?.user.name}
                     </p>
-                    <p className="text-slate-400 text-xs truncate">Pro Plan</p>
+                    {/* <p className="text-slate-400 text-xs truncate">Pro Plan</p> */}
                   </div>
                 </div>
               </div>

@@ -21,12 +21,16 @@ import {
   Check,
   Menu,
   X,
+  ChevronUp,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const ExpenseTrackerHomepage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
-
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+  const router = useRouter();
   // Auto-rotate features
   useEffect(() => {
     const interval = setInterval(() => {
@@ -34,6 +38,49 @@ const ExpenseTrackerHomepage = () => {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  // Handle scroll events for back to top button and active section
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show back to top button when scrolled down
+      setShowBackToTop(window.scrollY > 300);
+
+      // Update active section based on scroll position
+      const sections = ["home", "about", "contact"];
+      const scrollPosition = window.scrollY + 200;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = document.getElementById(sections[i]);
+        if (section && scrollPosition >= section.offsetTop) {
+          setActiveSection(sections[i]);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Smooth scroll function
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+    setIsMenuOpen(false); // Close mobile menu when navigating
+  };
+
+  // Back to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   const features = [
     {
@@ -98,8 +145,7 @@ const ExpenseTrackerHomepage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-hidden">
-      {/* Animated Background Elements */}
+    <div className="h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
         <div className="absolute top-40 right-10 w-72 h-72 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
@@ -107,35 +153,48 @@ const ExpenseTrackerHomepage = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-50 px-6 py-4">
+      <nav className="relative z-50 px-6 py-4  top-0 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <button
+            onClick={() => scrollToSection("home")}
+            className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+          >
             <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-xl flex items-center justify-center">
               <DollarSign className="w-6 h-6 text-white" />
             </div>
             <span className="text-xl font-bold">ExpenseTracker</span>
-          </div>
+          </button>
 
           <div className="hidden md:flex items-center space-x-8">
-            <a
-              href="#features"
-              className="hover:text-purple-300 transition-colors"
+            <button
+              onClick={() => scrollToSection("home")}
+              className={`hover:text-purple-300 transition-colors ${
+                activeSection === "home" ? "text-purple-300" : ""
+              }`}
             >
-              Features
-            </a>
-            <a
-              href="#pricing"
-              className="hover:text-purple-300 transition-colors"
-            >
-              Pricing
-            </a>
-            <a
-              href="#about"
-              className="hover:text-purple-300 transition-colors"
+              Home
+            </button>
+            <button
+              onClick={() => scrollToSection("about")}
+              className={`hover:text-purple-300 transition-colors ${
+                activeSection === "about" ? "text-purple-300" : ""
+              }`}
             >
               About
-            </a>
-            <button className="bg-gradient-to-r from-purple-500 to-cyan-500 px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105">
+            </button>
+            <button
+              onClick={() => scrollToSection("contact")}
+              className={`hover:text-purple-300 transition-colors ${
+                activeSection === "contact" ? "text-purple-300" : ""
+              }`}
+            >
+              Contact
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push("/login")}
+              className="bg-gradient-to-r from-purple-500 to-cyan-500 px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105"
+            >
               Get Started
             </button>
           </div>
@@ -156,25 +215,35 @@ const ExpenseTrackerHomepage = () => {
         {isMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-slate-800/95 backdrop-blur-md border-t border-slate-700 p-6">
             <div className="space-y-4">
-              <a
-                href="#features"
-                className="block hover:text-purple-300 transition-colors"
+              <button
+                onClick={() => scrollToSection("home")}
+                className={`block w-full text-left hover:text-purple-300 transition-colors ${
+                  activeSection === "home" ? "text-purple-300" : ""
+                }`}
               >
-                Features
-              </a>
-              <a
-                href="#pricing"
-                className="block hover:text-purple-300 transition-colors"
-              >
-                Pricing
-              </a>
-              <a
-                href="#about"
-                className="block hover:text-purple-300 transition-colors"
+                Home
+              </button>
+              <button
+                onClick={() => scrollToSection("about")}
+                className={`block w-full text-left hover:text-purple-300 transition-colors ${
+                  activeSection === "about" ? "text-purple-300" : ""
+                }`}
               >
                 About
-              </a>
-              <button className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 px-6 py-2 rounded-lg font-semibold">
+              </button>
+              <button
+                onClick={() => scrollToSection("contact")}
+                className={`block w-full text-left hover:text-purple-300 transition-colors ${
+                  activeSection === "contact" ? "text-purple-300" : ""
+                }`}
+              >
+                Contact
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push("/login")}
+                className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 px-6 py-2 rounded-lg font-semibold"
+              >
                 Get Started
               </button>
             </div>
@@ -183,7 +252,10 @@ const ExpenseTrackerHomepage = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 px-6 py-20 text-center">
+      <section
+        id="home"
+        className="relative z-10 px-6 py-20 min-h-screen flex items-center"
+      >
         <div className="max-w-6xl mx-auto">
           <div className="inline-flex items-center bg-purple-500/20 border border-purple-500/30 rounded-full px-4 py-2 mb-8">
             <Star className="w-4 h-4 text-yellow-400 mr-2" />
@@ -204,12 +276,13 @@ const ExpenseTrackerHomepage = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <button className="bg-gradient-to-r from-purple-500 to-cyan-500 px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={() => router.push("/login")}
+              className="bg-gradient-to-r from-purple-500 to-cyan-500 px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
+            >
               Start Tracking Free
               <ArrowRight className="w-5 h-5 ml-2" />
-            </button>
-            <button className="border border-slate-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-slate-800 transition-all duration-300 backdrop-blur-sm">
-              View Demo
             </button>
           </div>
 
@@ -231,7 +304,7 @@ const ExpenseTrackerHomepage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="relative z-10 px-6 py-20">
+      <section className="relative z-10 px-6 py-20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
@@ -405,8 +478,40 @@ const ExpenseTrackerHomepage = () => {
         </div>
       </section>
 
+      {/* About Section */}
+      <section
+        id="about"
+        className="relative z-10 px-6 py-20 min-h-screen flex items-center"
+      >
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            About
+            <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              {" "}
+              ExpenseTracker
+            </span>
+          </h2>
+          <p className="text-xl text-slate-300 mb-8 leading-relaxed">
+            We believe financial wellness should be simple and accessible to
+            everyone. Our mission is to empower individuals with the tools they
+            need to understand, track, and optimize their spending habits for a
+            better financial future.
+          </p>
+          <div className="bg-gradient-to-r from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700 rounded-3xl p-8">
+            <p className="text-lg text-slate-300">
+              Built by financial experts and technology enthusiasts,
+              ExpenseTracker combines powerful analytics with an intuitive
+              interface to make money management effortless and insightful.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="relative z-10 px-6 py-20">
+      <section
+        id="contact"
+        className="relative z-10 px-6 py-20 min-h-screen flex items-center"
+      >
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700 rounded-3xl p-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
@@ -421,12 +526,16 @@ const ExpenseTrackerHomepage = () => {
               habits with our intelligent expense tracking platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-gradient-to-r from-purple-500 to-cyan-500 px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => router.push("/login")}
+                className="bg-gradient-to-r from-purple-500 to-cyan-500 px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
+              >
                 Start Your Free Trial
                 <ArrowRight className="w-5 h-5 ml-2" />
               </button>
               <button className="border border-slate-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-slate-800 transition-all duration-300 backdrop-blur-sm">
-                Schedule Demo
+                Contact Us
               </button>
             </div>
           </div>
@@ -437,12 +546,15 @@ const ExpenseTrackerHomepage = () => {
       <footer className="relative z-10 px-6 py-12 border-t border-slate-800">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
+            <button
+              onClick={() => scrollToSection("home")}
+              className="flex items-center space-x-2 mb-4 md:mb-0 hover:opacity-80 transition-opacity"
+            >
               <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg flex items-center justify-center">
                 <DollarSign className="w-5 h-5 text-white" />
               </div>
               <span className="text-lg font-bold">ExpenseTracker</span>
-            </div>
+            </button>
             <div className="flex items-center space-x-6 text-slate-400">
               <a href="#" className="hover:text-white transition-colors">
                 Privacy
@@ -458,6 +570,17 @@ const ExpenseTrackerHomepage = () => {
           </div>
         </div>
       </footer>
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 w-12 h-12 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-110"
+          aria-label="Back to top"
+        >
+          <ChevronUp className="w-6 h-6 text-white" />
+        </button>
+      )}
     </div>
   );
 };

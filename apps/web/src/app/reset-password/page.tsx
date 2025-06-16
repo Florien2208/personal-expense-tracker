@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import {
@@ -14,6 +14,7 @@ import {
   Check,
   X,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const PasswordResetForm = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -23,7 +24,7 @@ const PasswordResetForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errors, setErrors] = useState({});
-
+const router = useRouter();
   // Password validation rules
   const passwordRules = {
     minLength: newPassword.length >= 8,
@@ -94,7 +95,11 @@ const PasswordResetForm = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <button className="flex items-center text-slate-300 hover:text-white transition-colors">
+            <button
+              type="button"
+              onClick={() => router.push("/login")}
+              className="flex items-center text-slate-300 hover:text-white transition-colors"
+            >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Sign In
             </button>

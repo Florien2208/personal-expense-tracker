@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   DollarSign,
   Bell,
@@ -11,10 +11,53 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { useQuery } from "@tanstack/react-query";
+import { orpc } from "@/utils/orpc";
+import { useRouter } from "next/navigation";
+import Loader from "./loader";
 
 const Navbar = ({ onMenuToggle, isMenuOpen }) => {
   const [showProfile, setShowProfile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+
+  // Refs for dropdown containers
+  const profileRef = useRef(null);
+  const notificationsRef = useRef(null);
+
+  const privateData = useQuery(orpc.privateData.queryOptions());
+
+  useEffect(() => {
+    if (!session && !isPending) {
+      router.push("/login");
+    }
+  }, [session, isPending]);
+
+  // Click outside effect
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfile(false);
+      }
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  if (isPending) {
+    return <Loader />;
+  }
 
   const notifications = [
     {
@@ -67,7 +110,7 @@ const Navbar = ({ onMenuToggle, isMenuOpen }) => {
         {/* Right Section */}
         <div className="flex items-center space-x-3">
           {/* Notifications */}
-          <div className="relative">
+          <div className="relative" ref={notificationsRef}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
               className="relative p-2 rounded-lg hover:bg-slate-800 transition-colors"
@@ -109,7 +152,7 @@ const Navbar = ({ onMenuToggle, isMenuOpen }) => {
           </div>
 
           {/* Profile */}
-          <div className="relative">
+          <div className="relative" ref={profileRef}>
             <button
               onClick={() => setShowProfile(!showProfile)}
               className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-800 transition-colors"
@@ -118,22 +161,42 @@ const Navbar = ({ onMenuToggle, isMenuOpen }) => {
                 <User className="w-4 h-4 text-white" />
               </div>
               <span className="text-white font-medium hidden sm:block">
-                John Doe
+                {session?.user.name}
               </span>
             </button>
 
             {showProfile && (
               <div className="absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-xl shadow-xl overflow-hidden">
                 <div className="p-4 border-b border-slate-700">
-                  <p className="text-white font-semibold">John Doe</p>
-                  <p className="text-slate-400 text-sm">john@example.com</p>
+                  <p className="text-white font-semibold">
+                    {session?.user.name}
+                  </p>
+                  <p className="text-slate-400 text-sm">
+                    {session?.user.email}
+                  </p>
                 </div>
                 <div className="py-2">
-                  <button className="w-full px-4 py-2 text-left text-slate-300 hover:bg-slate-700 transition-colors flex items-center space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => router.push("/dashboard/settings")}
+                    className="w-full px-4 py-2 text-left text-slate-300 hover:bg-slate-700 transition-colors flex items-center space-x-2"
+                  >
                     <Settings className="w-4 h-4" />
                     <span>Settings</span>
                   </button>
-                  <button className="w-full px-4 py-2 text-left text-red-400 hover:bg-slate-700 transition-colors flex items-center space-x-2">
+                  <button
+                    type="button"
+                    className="w-full px-4 py-2 text-left text-red-400 hover:bg-slate-700 transition-colors flex items-center space-x-2"
+                    onClick={() => {
+                      authClient.signOut({
+                        fetchOptions: {
+                          onSuccess: () => {
+                            router.push("/");
+                          },
+                        },
+                      });
+                    }}
+                  >
                     <LogOut className="w-4 h-4" />
                     <span>Logout</span>
                   </button>

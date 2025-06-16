@@ -1,31 +1,34 @@
 "use client";
-import { authClient } from "@/lib/auth-client";
-import { useQuery } from "@tanstack/react-query";
-import { orpc } from "@/utils/orpc";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
-export default function Dashboard() {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
+import React, { useState } from "react";
+import Navbar from "@/components/navbar";
+import Sidebar from "@/components/sidebar";
 
-  const privateData = useQuery(orpc.privateData.queryOptions());
+const DashboardLayout = ({ children }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    if (!session && !isPending) {
-      router.push("/login");
-    }
-  }, [session, isPending]);
-
-  if (isPending) {
-    return <div>Loading...</div>;
-  }
+  const handleMenuToggle = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome {session?.user.name}</p>
-      <p>privateData: {privateData.data?.message}</p>
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 flex flex-col">
+      {/* Navbar */}
+      <div className="flex-none">
+        <Navbar onMenuToggle={handleMenuToggle} isMenuOpen={isSidebarOpen} />
+      </div>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar isOpen={isSidebarOpen} />
+
+        {/* Main Content - This will render the current page */}
+        <div className="flex-1 lg:ml-0 overflow-auto h-full">
+          <div className="h-full">{children}</div>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default DashboardLayout;
