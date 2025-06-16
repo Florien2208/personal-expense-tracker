@@ -3,7 +3,7 @@
   "buildCommand": "bun run build",
   "installCommand": "bun install",
   "functions": {
-    "apps/server/api/**/*.js": {
+    "apps/server/api/**/*.ts": {
       "runtime": "@vercel/node"
     }
   },
