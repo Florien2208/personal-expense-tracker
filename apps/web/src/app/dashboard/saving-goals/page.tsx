@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, type JSX } from "react";
 import {
   Target,
   Plus,
@@ -22,23 +22,59 @@ import {
   Heart,
   Gift,
 } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+
+interface Contribution {
+  date: string;
+  amount: number;
+}
+
+interface Goal {
+  id: number;
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  deadline: string;
+  category: string;
+  icon: string;
+  color: string;
+  priority: "low" | "medium" | "high";
+  monthlyTarget: number;
+  createdDate: string;
+  contributions: Contribution[];
+}
+
+interface NewGoal {
+  name: string;
+  targetAmount: string;
+  deadline: string;
+  category: string;
+  icon: string;
+  color: string;
+  priority: "low" | "medium" | "high";
+  monthlyTarget: string;
+}
+
+interface GoalCategory {
+  name: string;
+  icon: string;
+  color: string;
+}
+
+interface GoalStatus {
+  status: string;
+  color: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
 
 const SavingsGoals = () => {
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingGoal, setEditingGoal] = useState(null);
-  const [showContributeModal, setShowContributeModal] = useState(null);
+  const [showContributeModal, setShowContributeModal] = useState<Goal | null>(
+    null
+  );
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [contributionAmount, setContributionAmount] = useState("");
 
-  const [goals, setGoals] = useState([
+  const [goals, setGoals] = useState<Goal[]>([
     {
       id: 1,
       name: "Emergency Fund",
@@ -124,7 +160,7 @@ const SavingsGoals = () => {
     },
   ]);
 
-  const [newGoal, setNewGoal] = useState({
+  const [newGoal, setNewGoal] = useState<NewGoal>({
     name: "",
     targetAmount: "",
     deadline: "",
@@ -146,8 +182,8 @@ const SavingsGoals = () => {
     { name: "Other", icon: "target", color: "#8B5A2B" },
   ];
 
-  const getIcon = (iconName) => {
-    const icons = {
+  const getIcon = (iconName: string): JSX.Element => {
+    const icons: Record<string, JSX.Element> = {
       shield: <PiggyBank className="w-5 h-5" />,
       plane: <Plane className="w-5 h-5" />,
       car: <Car className="w-5 h-5" />,
@@ -160,10 +196,11 @@ const SavingsGoals = () => {
     return icons[iconName] || icons.target;
   };
 
-  const getGoalStatus = (current, target, deadline) => {
+  const getGoalStatus = (current: number, target: number, deadline: string) => {
     const progress = (current / target) * 100;
     const daysLeft = Math.ceil(
-      (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)
+      (new Date(deadline).getTime() - new Date().getTime()) /
+        (1000 * 60 * 60 * 24)
     );
 
     if (progress >= 100)
@@ -179,13 +216,17 @@ const SavingsGoals = () => {
     return { status: "on-track", color: "text-blue-400", icon: TrendingUp };
   };
 
-  const calculateMonthsToGoal = (current, target, monthlyContribution) => {
+  const calculateMonthsToGoal = (
+    current: number,
+    target: number,
+    monthlyContribution: number
+  ): string | number => {
     if (monthlyContribution <= 0) return "∞";
     const remaining = target - current;
     return Math.ceil(remaining / monthlyContribution);
   };
 
-  const handleAddGoal = (e) => {
+  const handleAddGoal = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newGoal.name && newGoal.targetAmount && newGoal.deadline) {
       const goal = {
@@ -212,7 +253,7 @@ const SavingsGoals = () => {
     }
   };
 
-  const handleContribute = (e) => {
+  const handleContribute = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (contributionAmount && showContributeModal) {
       const amount = parseFloat(contributionAmount);
@@ -238,7 +279,7 @@ const SavingsGoals = () => {
     }
   };
 
-  const handleDeleteGoal = (id) => {
+  const handleDeleteGoal = (id:number) => {
     setGoals(goals.filter((g) => g.id !== id));
   };
 
@@ -254,7 +295,7 @@ const SavingsGoals = () => {
     (goal) => goal.currentAmount >= goal.targetAmount
   ).length;
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -262,9 +303,10 @@ const SavingsGoals = () => {
     });
   };
 
-  const getDaysLeft = (deadline) => {
+  const getDaysLeft = (deadline: string): number => {
     const days = Math.ceil(
-      (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)
+      (new Date(deadline).getTime() - new Date().getTime()) /
+        (1000 * 60 * 60 * 24)
     );
     return days > 0 ? days : 0;
   };
@@ -607,7 +649,10 @@ const SavingsGoals = () => {
                 <select
                   value={newGoal.priority}
                   onChange={(e) =>
-                    setNewGoal({ ...newGoal, priority: e.target.value })
+                    setNewGoal({
+                      ...newGoal,
+                      priority: e.target.value as "low" | "medium" | "high",
+                    })
                   }
                   className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >

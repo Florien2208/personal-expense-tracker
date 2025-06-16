@@ -14,11 +14,34 @@ import {
   DollarSign,
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+interface Budget {
+  id: number;
+  category: string;
+  budgetAmount: number;
+  spentAmount: number;
+  period: "weekly" | "monthly" | "yearly";
+  color: string;
+  startDate: string;
+  endDate: string;
+}
 
+interface NewBudget {
+  category: string;
+  budgetAmount: string;
+  period: "weekly" | "monthly" | "yearly";
+  color: string;
+}
+
+interface PieChartDataItem {
+  name: string;
+  value: number;
+  color: string;
+  budget: number;
+}
 const Budgets = () => {
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingBudget, setEditingBudget] = useState(null);
-  const [budgets, setBudgets] = useState([
+  const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
+  const [budgets, setBudgets] = useState<Budget[]>([
     {
       id: 1,
       category: "Food & Dining",
@@ -71,14 +94,14 @@ const Budgets = () => {
     },
   ]);
 
-  const [newBudget, setNewBudget] = useState({
+  const [newBudget, setNewBudget] = useState<NewBudget>({
     category: "",
     budgetAmount: "",
     period: "monthly",
     color: "#8B5CF6",
   });
 
-  const categories = [
+  const categories:string [] = [
     "Food & Dining",
     "Transportation",
     "Entertainment",
@@ -88,7 +111,7 @@ const Budgets = () => {
     "Other",
   ];
 
-  const colors = [
+  const colors: string[] = [
     "#8B5CF6",
     "#06B6D4",
     "#F59E0B",
@@ -99,7 +122,7 @@ const Budgets = () => {
     "#8B5A2B",
   ];
 
-  const handleAddBudget = (e) => {
+  const handleAddBudget = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newBudget.category && newBudget.budgetAmount) {
       const budget = {
@@ -121,30 +144,32 @@ const Budgets = () => {
     }
   };
 
-  const handleEditBudget = (budget) => {
+  const handleEditBudget = (budget:Budget) => {
     setEditingBudget({ ...budget });
   };
 
-  const handleUpdateBudget = (e) => {
+  const handleUpdateBudget = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setBudgets(
-      budgets.map((b) =>
-        b.id === editingBudget.id
-          ? {
-              ...editingBudget,
-              budgetAmount: parseFloat(editingBudget.budgetAmount),
-            }
-          : b
-      )
-    );
-    setEditingBudget(null);
+    if (editingBudget) {
+      setBudgets(
+        budgets.map((b) =>
+          b.id === editingBudget.id
+            ? {
+                ...editingBudget,
+                budgetAmount: parseFloat(editingBudget.budgetAmount.toString()),
+              }
+            : b
+        )
+      );
+      setEditingBudget(null);
+    }
   };
 
-  const handleDeleteBudget = (id) => {
+  const handleDeleteBudget = (id:number) => {
     setBudgets(budgets.filter((b) => b.id !== id));
   };
 
-  const getEndDate = (period) => {
+  const getEndDate = (period: "weekly" | "monthly" | "yearly"): string => {
     const now = new Date();
     const endDate = new Date(now);
 
@@ -165,7 +190,7 @@ const Budgets = () => {
     return endDate.toISOString().split("T")[0];
   };
 
-  const getBudgetStatus = (spent, budget) => {
+  const getBudgetStatus = (spent: number, budget: number) => {
     const percentage = (spent / budget) * 100;
     if (percentage >= 100)
       return { status: "exceeded", color: "text-red-400", icon: AlertTriangle };
@@ -188,7 +213,7 @@ const Budgets = () => {
   );
   const totalRemaining = totalBudget - totalSpent;
 
-  const pieChartData = budgets.map((budget) => ({
+  const pieChartData: PieChartDataItem[] = budgets.map((budget) => ({
     name: budget.category,
     value: budget.spentAmount,
     color: budget.color,
@@ -292,7 +317,9 @@ const Budgets = () => {
                   borderRadius: "8px",
                 }}
                 formatter={(value, name, props) => [
-                  `$${value.toFixed(2)} / $${props.payload.budget.toFixed(2)}`,
+                  `$${Number(value).toFixed(
+                    2
+                  )} / $${props.payload.budget.toFixed(2)}`,
                   name,
                 ]}
               />
@@ -510,7 +537,10 @@ const Budgets = () => {
                 <select
                   value={newBudget.period}
                   onChange={(e) =>
-                    setNewBudget({ ...newBudget, period: e.target.value })
+                    setNewBudget({
+                      ...newBudget,
+                      period: e.target.value as "weekly" | "monthly" | "yearly",
+                    })
                   }
                   className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
@@ -596,7 +626,7 @@ const Budgets = () => {
                   onChange={(e) =>
                     setEditingBudget({
                       ...editingBudget,
-                      budgetAmount: e.target.value,
+                      period: e.target.value as "weekly" | "monthly" | "yearly",
                     })
                   }
                   className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -611,7 +641,7 @@ const Budgets = () => {
                   onChange={(e) =>
                     setEditingBudget({
                       ...editingBudget,
-                      period: e.target.value,
+                      period: e.target.value as "weekly" | "monthly" | "yearly",
                     })
                   }
                   className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"

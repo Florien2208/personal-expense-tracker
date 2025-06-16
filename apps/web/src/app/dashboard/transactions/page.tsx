@@ -15,12 +15,32 @@ import {
   TrendingDown,
   X,
 } from "lucide-react";
+type TransactionType = "income" | "expense";
+
+// Transaction Interface
+interface Transaction {
+  id: number;
+  description: string;
+  category: string;
+  amount: number;
+  date: string;
+  type: TransactionType;
+}
+
+// New Transaction Interface (before parsing amount to number)
+interface NewTransaction {
+  description: string;
+  category: string;
+  amount: string;
+  date: string;
+  type: TransactionType;
+}
 
 const Transactions = () => {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterCategory, setFilterCategory] = useState("All");
-  const [filterType, setFilterType] = useState("All");
+  const [showAddModal, setShowAddModal] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filterCategory, setFilterCategory] = useState<string>("All");
+  const [filterType, setFilterType] = useState<string>("All");
   const [transactions, setTransactions] = useState([
     {
       id: 1,
@@ -107,7 +127,7 @@ const Transactions = () => {
     "Other",
   ];
 
-  const handleAddTransaction = (e) => {
+  const handleAddTransaction = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
       newTransaction.description &&
@@ -134,7 +154,7 @@ const Transactions = () => {
     }
   };
 
-  const handleDeleteTransaction = (id) => {
+  const handleDeleteTransaction = (id:number) => {
     setTransactions(transactions.filter((t) => t.id !== id));
   };
 
@@ -156,7 +176,7 @@ const Transactions = () => {
     .filter((t) => t.amount < 0)
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString:string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       month: "short",

@@ -27,20 +27,66 @@ import {
   FileText,
   HelpCircle,
   LogOut,
+  type LucideIcon,
 } from "lucide-react";
+type ProfileData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  bio: string;
+};
 
+type Notifications = {
+  budgetAlerts: boolean;
+  transactionReminders: boolean;
+  goalMilestones: boolean;
+  weeklyReports: boolean;
+  monthlyReports: boolean;
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  smsNotifications: boolean;
+};
+
+type SecuritySettings = {
+  twoFactorAuth: boolean;
+  loginAlerts: boolean;
+  sessionTimeout: string;
+  autoLogout: boolean;
+};
+
+type Preferences = {
+  currency: string;
+  dateFormat: string;
+  theme: string;
+  language: string;
+  defaultView: string;
+  budgetWarning: string;
+};
+
+type PasswordData = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
+type SaveStatus = "saving" | "saved" | null;
+type NotificationKey = keyof Notifications;
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState("profile");
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [saveStatus, setSaveStatus] = useState(null);
+  const [activeTab, setActiveTab] = useState<string>("profile");
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showCurrentPassword, setShowCurrentPassword] =
+    useState<boolean>(false);
+  const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>(null);
 
   // Profile Settings State
-  const [profileData, setProfileData] = useState({
+  const [profileData, setProfileData] = useState<ProfileData>({
     firstName: "John",
     lastName: "Doe",
     email: "john.doe@example.com",
@@ -50,7 +96,7 @@ const Settings = () => {
   });
 
   // Notification Settings State
-  const [notifications, setNotifications] = useState({
+  const [notifications, setNotifications] = useState<Notifications>({
     budgetAlerts: true,
     transactionReminders: true,
     goalMilestones: true,
@@ -62,31 +108,23 @@ const Settings = () => {
   });
 
   // Security Settings State
-  const [securitySettings, setSecuritySettings] = useState({
+  const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
     twoFactorAuth: false,
     loginAlerts: true,
     sessionTimeout: "30",
     autoLogout: true,
   });
 
-  // Preferences State
-  const [preferences, setPreferences] = useState({
-    currency: "USD",
-    dateFormat: "MM/DD/YYYY",
-    theme: "dark",
-    language: "en",
-    defaultView: "overview",
-    budgetWarning: "80",
-  });
+  
 
   // Password Change State
-  const [passwordData, setPasswordData] = useState({
+  const [passwordData, setPasswordData] = useState<PasswordData>({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
 
-  const handleSave = (section) => {
+  const handleSave = (section:string) => {
     setSaveStatus("saving");
     // Simulate API call
     setTimeout(() => {
@@ -95,7 +133,7 @@ const Settings = () => {
     }, 1000);
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       alert("Passwords don't match!");
@@ -119,11 +157,96 @@ const Settings = () => {
     );
   };
 
-  const exportData = (format) => {
+  const exportData = (format: string) => {
     // Handle data export logic here
     alert(`Exporting data in ${format.toUpperCase()} format...`);
   };
+  const notificationItems: {
+    key: NotificationKey;
+    label: string;
+    desc?: string;
+    icon?: LucideIcon;
+  }[] = [
+    {
+      key: "budgetAlerts",
+      label: "Budget limit warnings",
+      desc: "Get notified when you're close to your budget limits",
+    },
+    {
+      key: "transactionReminders",
+      label: "Transaction reminders",
+      desc: "Reminders to log transactions you might have missed",
+    },
+    {
+      key: "goalMilestones",
+      label: "Savings goal milestones",
+      desc: "Celebrate when you reach savings milestones",
+    },
+    {
+      key: "weeklyReports",
+      label: "Weekly reports",
+      desc: "Receive weekly spending summaries",
+    },
+    {
+      key: "monthlyReports",
+      label: "Monthly reports",
+      desc: "Detailed monthly financial reports",
+    },
+    {
+      key: "emailNotifications",
+      label: "Email notifications",
+      icon: Mail,
+    },
+    {
+      key: "pushNotifications",
+      label: "Push notifications",
+      icon: Smartphone,
+    },
+    {
+      key: "smsNotifications",
+      label: "SMS notifications",
+      icon: Bell,
+    },
+  ];
+  const reportNotifications: {
+    key: NotificationKey;
+    label: string;
+    desc: string;
+  }[] = [
+    {
+      key: "weeklyReports",
+      label: "Weekly reports",
+      desc: "Receive weekly spending summaries",
+    },
+    {
+      key: "monthlyReports",
+      label: "Monthly reports",
+      desc: "Detailed monthly financial reports",
+    },
+  ];
 
+  const deliveryNotifications: {
+    key: NotificationKey;
+    label: string;
+    icon: LucideIcon;
+  }[] = [
+    {
+      key: "emailNotifications",
+      label: "Email notifications",
+      icon: Mail,
+    },
+    {
+      key: "pushNotifications",
+      label: "Push notifications",
+      icon: Smartphone,
+    },
+    {
+      key: "smsNotifications",
+      label: "SMS notifications",
+      icon: Bell,
+    },
+  ];
+  
   const tabs = [
     { id: "profile", label: "Profile", icon: User },
     { id: "notifications", label: "Notifications", icon: Bell },
@@ -133,7 +256,7 @@ const Settings = () => {
     { id: "support", label: "Support", icon: HelpCircle },
   ];
 
-  const renderSaveButton = (section) => (
+  const renderSaveButton = (section:string) => (
     <button
       onClick={() => handleSave(section)}
       disabled={saveStatus === "saving"}
@@ -283,23 +406,7 @@ const Settings = () => {
           Budget & Transaction Alerts
         </h3>
         <div className="space-y-4">
-          {[
-            {
-              key: "budgetAlerts",
-              label: "Budget limit warnings",
-              desc: "Get notified when you're close to your budget limits",
-            },
-            {
-              key: "transactionReminders",
-              label: "Transaction reminders",
-              desc: "Reminders to log transactions you might have missed",
-            },
-            {
-              key: "goalMilestones",
-              label: "Savings goal milestones",
-              desc: "Celebrate when you reach savings milestones",
-            },
-          ].map((item) => (
+          {notificationItems.map((item) => (
             <div key={item.key} className="flex items-center justify-between">
               <div>
                 <p className="text-white font-medium">{item.label}</p>
@@ -329,18 +436,7 @@ const Settings = () => {
           Report Notifications
         </h3>
         <div className="space-y-4">
-          {[
-            {
-              key: "weeklyReports",
-              label: "Weekly reports",
-              desc: "Receive weekly spending summaries",
-            },
-            {
-              key: "monthlyReports",
-              label: "Monthly reports",
-              desc: "Detailed monthly financial reports",
-            },
-          ].map((item) => (
+          {reportNotifications.map((item) => (
             <div key={item.key} className="flex items-center justify-between">
               <div>
                 <p className="text-white font-medium">{item.label}</p>
@@ -368,19 +464,7 @@ const Settings = () => {
       <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6">
         <h3 className="text-xl font-bold text-white mb-6">Delivery Methods</h3>
         <div className="space-y-4">
-          {[
-            {
-              key: "emailNotifications",
-              label: "Email notifications",
-              icon: Mail,
-            },
-            {
-              key: "pushNotifications",
-              label: "Push notifications",
-              icon: Smartphone,
-            },
-            { key: "smsNotifications", label: "SMS notifications", icon: Bell },
-          ].map((item) => (
+          {deliveryNotifications.map((item) => (
             <div key={item.key} className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <item.icon className="w-5 h-5 text-slate-400" />

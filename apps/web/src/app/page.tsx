@@ -63,7 +63,7 @@ const ExpenseTrackerHomepage = () => {
   }, []);
 
   // Smooth scroll function
-  const scrollToSection = (sectionId) => {
+  const scrollToSection = (sectionId: string) => {
     const section = document.getElementById(sectionId);
     if (section) {
       section.scrollIntoView({

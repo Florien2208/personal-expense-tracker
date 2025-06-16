@@ -16,27 +16,32 @@ import {
   BarChart3,
   Calendar,
 } from "lucide-react";
-import {
-  PieChart as RechartsePieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
 
+interface Category {
+  id: number;
+  name: string;
+  color: string;
+  icon: string;
+  totalSpent: number;
+  transactionCount: number;
+  avgTransaction: number;
+  monthlyTrend: number;
+  description: string;
+}
+
+interface NewCategory {
+  name: string;
+  color: string;
+  icon: string;
+  description: string;
+}
 const Categories = () => {
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingCategory, setEditingCategory] = useState(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState("This Month");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [categories, setCategories] = useState([
+  const [categories, setCategories] = useState<Category[]>([
     {
       id: 1,
       name: "Food & Dining",
@@ -116,7 +121,7 @@ const Categories = () => {
     },
   ]);
 
-  const [newCategory, setNewCategory] = useState({
+  const [newCategory, setNewCategory] = useState<NewCategory>({
     name: "",
     color: "#8B5CF6",
     icon: "📂",
@@ -159,7 +164,7 @@ const Categories = () => {
     "#84CC16",
   ];
 
-  const handleAddCategory = (e) => {
+  const handleAddCategory = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newCategory.name.trim()) {
       const category = {
@@ -181,19 +186,23 @@ const Categories = () => {
     }
   };
 
-  const handleEditCategory = (category) => {
+  const handleEditCategory = (category:Category) => {
     setEditingCategory({ ...category });
   };
 
-  const handleUpdateCategory = (e) => {
+  const handleUpdateCategory = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setCategories(
-      categories.map((c) => (c.id === editingCategory.id ? editingCategory : c))
-    );
-    setEditingCategory(null);
+    if (editingCategory) {
+      setCategories(
+        categories.map((c) =>
+          c.id === editingCategory.id ? editingCategory : c
+        )
+      );
+      setEditingCategory(null);
+    }
   };
 
-  const handleDeleteCategory = (id) => {
+  const handleDeleteCategory = (id:number) => {
     setCategories(categories.filter((c) => c.id !== id));
   };
 
@@ -449,7 +458,7 @@ const Categories = () => {
                     })
                   }
                   className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                  rows="3"
+                  rows={3}
                   placeholder="Brief description of this category"
                 />
               </div>
@@ -566,7 +575,7 @@ const Categories = () => {
                     })
                   }
                   className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                  rows="3"
+                  rows={3}
                 />
               </div>
 

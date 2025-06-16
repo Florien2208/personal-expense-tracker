@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, type PropsWithChildren } from "react";
 import Navbar from "@/components/navbar";
 import Sidebar from "@/components/sidebar";
 
-const DashboardLayout = ({ children }) => {
+const DashboardLayout = ({ children }: PropsWithChildren) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleMenuToggle = () => {

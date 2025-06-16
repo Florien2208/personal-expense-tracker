@@ -18,14 +18,38 @@ import { toast } from "sonner";
 import z from "zod/v4";
 import { useRouter } from "next/navigation";
 import Loader from "./loader";
+type SignupPageProps = {
+  onSwitchToSignIn: () => void;
+};
+type SignupFormValues = {
+  name?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agreeToTerms: boolean;
+  subscribeNewsletter: boolean;
+};
 
-const SignupPage = ({ onSwitchToSignIn }) => {
+const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToSignIn }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const { isPending } = authClient.useSession();
 
-  const form = useForm({
+  const form = useForm<
+    SignupFormValues, // TFormData
+    any, // TFormMeta
+    any, // TFieldMeta
+    any, // TFieldValue
+    any, // TFieldInputValue
+    any, // TFieldError
+    any, // TFieldStore
+    any, // TFieldApi
+    any, // TFormApi
+    any // TFormStore
+  >({
     defaultValues: {
       email: "",
       password: "",
@@ -47,7 +71,7 @@ const SignupPage = ({ onSwitchToSignIn }) => {
           name: fullName || value.name, // Use generated name or fallback to manual name
           firstName: value.firstName,
           lastName: value.lastName,
-        },
+        } as any,
         {
           onSuccess: () => {
             router.push("/dashboard");
@@ -97,9 +121,7 @@ const SignupPage = ({ onSwitchToSignIn }) => {
   ];
 
   if (isPending) {
-    return (
-     <Loader />
-    );
+    return <Loader />;
   }
 
   return (
@@ -251,14 +273,37 @@ const SignupPage = ({ onSwitchToSignIn }) => {
                               required
                             />
                           </div>
-                          {field.state.meta.errors.map((error) => (
-                            <p
-                              key={error?.message}
-                              className="text-red-400 text-xs mt-1"
-                            >
-                              {error?.message}
-                            </p>
-                          ))}
+                          {field.state.meta.errors.map((error, i) => {
+                            const err = error as unknown;
+
+                            if (typeof err === "string") {
+                              return (
+                                <p
+                                  key={i}
+                                  className="text-red-400 text-xs mt-1"
+                                >
+                                  {err}
+                                </p>
+                              );
+                            }
+
+                            if (
+                              typeof err === "object" &&
+                              err !== null &&
+                              "message" in err
+                            ) {
+                              return (
+                                <p
+                                  key={i}
+                                  className="text-red-400 text-xs mt-1"
+                                >
+                                  {(err as { message?: string }).message}
+                                </p>
+                              );
+                            }
+
+                            return null;
+                          })}
                         </div>
                       )}
                     </form.Field>
@@ -281,14 +326,37 @@ const SignupPage = ({ onSwitchToSignIn }) => {
                             placeholder="Doe"
                             required
                           />
-                          {field.state.meta.errors.map((error) => (
-                            <p
-                              key={error?.message}
-                              className="text-red-400 text-xs mt-1"
-                            >
-                              {error?.message}
-                            </p>
-                          ))}
+                          {field.state.meta.errors.map((error, i) => {
+                            const err = error as unknown;
+
+                            if (typeof err === "string") {
+                              return (
+                                <p
+                                  key={i}
+                                  className="text-red-400 text-xs mt-1"
+                                >
+                                  {err}
+                                </p>
+                              );
+                            }
+
+                            if (
+                              typeof err === "object" &&
+                              err !== null &&
+                              "message" in err
+                            ) {
+                              return (
+                                <p
+                                  key={i}
+                                  className="text-red-400 text-xs mt-1"
+                                >
+                                  {(err as { message?: string }).message}
+                                </p>
+                              );
+                            }
+
+                            return null;
+                          })}
                         </div>
                       )}
                     </form.Field>
@@ -317,14 +385,31 @@ const SignupPage = ({ onSwitchToSignIn }) => {
                             required
                           />
                         </div>
-                        {field.state.meta.errors.map((error) => (
-                          <p
-                            key={error?.message}
-                            className="text-red-400 text-xs mt-1"
-                          >
-                            {error?.message}
-                          </p>
-                        ))}
+                        {field.state.meta.errors.map((error, i) => {
+                          const err = error as unknown;
+
+                          if (typeof err === "string") {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {err}
+                              </p>
+                            );
+                          }
+
+                          if (
+                            typeof err === "object" &&
+                            err !== null &&
+                            "message" in err
+                          ) {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {(err as { message?: string }).message}
+                              </p>
+                            );
+                          }
+
+                          return null;
+                        })}
                       </div>
                     )}
                   </form.Field>
@@ -363,14 +448,31 @@ const SignupPage = ({ onSwitchToSignIn }) => {
                             )}
                           </button>
                         </div>
-                        {field.state.meta.errors.map((error) => (
-                          <p
-                            key={error?.message}
-                            className="text-red-400 text-xs mt-1"
-                          >
-                            {error?.message}
-                          </p>
-                        ))}
+                        {field.state.meta.errors.map((error, i) => {
+                          const err = error as unknown;
+
+                          if (typeof err === "string") {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {err}
+                              </p>
+                            );
+                          }
+
+                          if (
+                            typeof err === "object" &&
+                            err !== null &&
+                            "message" in err
+                          ) {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {(err as { message?: string }).message}
+                              </p>
+                            );
+                          }
+
+                          return null;
+                        })}
                       </div>
                     )}
                   </form.Field>
@@ -411,14 +513,31 @@ const SignupPage = ({ onSwitchToSignIn }) => {
                             )}
                           </button>
                         </div>
-                        {field.state.meta.errors.map((error) => (
-                          <p
-                            key={error?.message}
-                            className="text-red-400 text-xs mt-1"
-                          >
-                            {error?.message}
-                          </p>
-                        ))}
+                        {field.state.meta.errors.map((error, i) => {
+                          const err = error as unknown;
+
+                          if (typeof err === "string") {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {err}
+                              </p>
+                            );
+                          }
+
+                          if (
+                            typeof err === "object" &&
+                            err !== null &&
+                            "message" in err
+                          ) {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {(err as { message?: string }).message}
+                              </p>
+                            );
+                          }
+
+                          return null;
+                        })}
                       </div>
                     )}
                   </form.Field>
@@ -456,14 +575,31 @@ const SignupPage = ({ onSwitchToSignIn }) => {
                             </a>
                           </span>
                         </label>
-                        {field.state.meta.errors.map((error) => (
-                          <p
-                            key={error?.message}
-                            className="text-red-400 text-xs mt-1"
-                          >
-                            {error?.message}
-                          </p>
-                        ))}
+                        {field.state.meta.errors.map((error, i) => {
+                          const err = error as unknown;
+
+                          if (typeof err === "string") {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {err}
+                              </p>
+                            );
+                          }
+
+                          if (
+                            typeof err === "object" &&
+                            err !== null &&
+                            "message" in err
+                          ) {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {(err as { message?: string }).message}
+                              </p>
+                            );
+                          }
+
+                          return null;
+                        })}
                       </div>
                     )}
                   </form.Field>

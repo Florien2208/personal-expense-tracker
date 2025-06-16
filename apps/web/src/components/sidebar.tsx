@@ -19,10 +19,13 @@ import { useRouter, usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import Loader from "./loader";
 
-const Sidebar = ({ isOpen }) => {
+interface SidebarProps {
+  isOpen: boolean;
+}
+const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const router = useRouter();
   const pathname = usePathname();
-    const { data: session, isPending } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
 
   const menuItems = [
     {
@@ -66,10 +69,10 @@ const Sidebar = ({ isOpen }) => {
     },
   ];
 
-  const isActive = (itemPath) => {
+  const isActive = (itemPath:string) => {
     return pathname === itemPath;
   };
- if (isPending) {
+  if (isPending) {
     return <Loader />;
   }
 

@@ -17,15 +17,19 @@ import { orpc } from "@/utils/orpc";
 import { useRouter } from "next/navigation";
 import Loader from "./loader";
 
-const Navbar = ({ onMenuToggle, isMenuOpen }) => {
+type NavbarProps = {
+  onMenuToggle: () => void;
+  isMenuOpen: boolean;
+};
+
+const Navbar: React.FC<NavbarProps> = ({ onMenuToggle, isMenuOpen }) => {
   const [showProfile, setShowProfile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
-  // Refs for dropdown containers
-  const profileRef = useRef(null);
-  const notificationsRef = useRef(null);
+  const profileRef = useRef<HTMLDivElement | null>(null);
+  const notificationsRef = useRef<HTMLDivElement | null>(null);
 
   const privateData = useQuery(orpc.privateData.queryOptions());
 
@@ -33,17 +37,19 @@ const Navbar = ({ onMenuToggle, isMenuOpen }) => {
     if (!session && !isPending) {
       router.push("/login");
     }
-  }, [session, isPending]);
+  }, [session, isPending, router]);
 
-  // Click outside effect
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
         setShowProfile(false);
       }
       if (
         notificationsRef.current &&
-        !notificationsRef.current.contains(event.target)
+        !notificationsRef.current.contains(event.target as Node)
       ) {
         setShowNotifications(false);
       }
@@ -67,7 +73,7 @@ const Navbar = ({ onMenuToggle, isMenuOpen }) => {
     },
     { id: 2, message: "New transaction added successfully", type: "success" },
     { id: 3, message: "Monthly report is ready", type: "info" },
-  ];
+  ] as const;
 
   return (
     <nav className="bg-slate-900/95 backdrop-blur-sm border-b border-slate-800 px-4 py-3 sticky top-0 z-50">

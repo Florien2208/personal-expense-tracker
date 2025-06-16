@@ -36,7 +36,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignUp }) => {
   const router = useRouter();
   const { isPending } = authClient.useSession();
 
-  const form = useForm<FormValues>({
+  const form = useForm<
+    FormValues,
+    any, // TFormMeta
+    any, // TFieldMeta
+    any, // TFieldValue
+    any, // TFieldInputValue
+    any, // TFieldError
+    any, // TFieldStore
+    any, // TFieldApi
+    any, // TFormApi
+    any
+  >({
     defaultValues: {
       email: "",
       password: "",
@@ -194,14 +205,31 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignUp }) => {
                             required
                           />
                         </div>
-                        {field.state.meta.errors.map((error) => (
-                          <p
-                            key={error?.message}
-                            className="text-red-400 text-sm mt-1"
-                          >
-                            {error?.message}
-                          </p>
-                        ))}
+                        {field.state.meta.errors.map((error, i) => {
+                          const err = error as unknown;
+
+                          if (typeof err === "string") {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {err}
+                              </p>
+                            );
+                          }
+
+                          if (
+                            typeof err === "object" &&
+                            err !== null &&
+                            "message" in err
+                          ) {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {(err as { message?: string }).message}
+                              </p>
+                            );
+                          }
+
+                          return null;
+                        })}
                       </div>
                     )}
                   </form.Field>
@@ -242,14 +270,31 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignUp }) => {
                             )}
                           </Button>
                         </div>
-                        {field.state.meta.errors.map((error) => (
-                          <p
-                            key={error?.message}
-                            className="text-red-400 text-sm mt-1"
-                          >
-                            {error?.message}
-                          </p>
-                        ))}
+                        {field.state.meta.errors.map((error, i) => {
+                          const err = error as unknown;
+
+                          if (typeof err === "string") {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {err}
+                              </p>
+                            );
+                          }
+
+                          if (
+                            typeof err === "object" &&
+                            err !== null &&
+                            "message" in err
+                          ) {
+                            return (
+                              <p key={i} className="text-red-400 text-xs mt-1">
+                                {(err as { message?: string }).message}
+                              </p>
+                            );
+                          }
+
+                          return null;
+                        })}
                       </div>
                     )}
                   </form.Field>

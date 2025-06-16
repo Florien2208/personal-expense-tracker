@@ -23,7 +23,10 @@ const PasswordResetForm = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{ password?: string; confirm?: string }>(
+    {}
+  );
+
 const router = useRouter();
   // Password validation rules
   const passwordRules = {
@@ -38,10 +41,11 @@ const router = useRouter();
   const doPasswordsMatch =
     newPassword === confirmPassword && confirmPassword.length > 0;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors = {};
+    const newErrors: { password?: string; confirm?: string } = {};
+
 
     if (!isPasswordValid) {
       newErrors.password = "Password does not meet requirements";
@@ -64,7 +68,10 @@ const router = useRouter();
     }
   };
 
-  const PasswordStrengthIndicator = ({ rule, text }) => (
+  const PasswordStrengthIndicator: React.FC<{
+    rule: boolean;
+    text: string;
+  }> = ({ rule, text }) => (
     <div
       className={`flex items-center space-x-2 text-sm ${
         rule ? "text-green-400" : "text-slate-400"
