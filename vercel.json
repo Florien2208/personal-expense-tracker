@@ -1,12 +1,14 @@
 {
   "version": 2,
-  "buildCommand": "bun run build",
-  "installCommand": "bun install",
-  "functions": {
-    "apps/server/api/**/*.ts": {
-      "runtime": "@vercel/node"
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["apps/**", "packages/**"]
+      }
     }
-  },
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
@@ -16,5 +18,10 @@
       "src": "/(.*)",
       "dest": "apps/web/$1"
     }
-  ]
+  ],
+  "functions": {
+    "apps/server/api/*.js": {
+      "runtime": "@vercel/node"
+    }
+  }
 }
