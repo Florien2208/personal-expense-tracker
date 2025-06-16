@@ -3,27 +3,21 @@
   "builds": [
     {
       "src": "apps/web/package.json",
-      "use": "@vercel/next",
-      "config": {
-        "distDir": ".next"
-      }
+      "use": "@vercel/next"
     },
     {
       "src": "apps/server/package.json",
-      "use": "@vercel/next",
-      "config": {
-        "distDir": ".next"
-      }
+      "use": "@vercel/next"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/apps/server/api/$1"
+      "dest": "apps/server/api/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/apps/web/$1"
+      "dest": "apps/web/$1"
     }
   ]
 }
