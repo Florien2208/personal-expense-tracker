@@ -20,7 +20,7 @@
     }
   ],
   "functions": {
-    "apps/server/api/*.js": {
+    "apps/server/api/*.ts": {
       "runtime": "@vercel/node"
     }
   }
